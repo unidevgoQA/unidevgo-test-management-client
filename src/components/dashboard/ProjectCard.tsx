@@ -1,5 +1,5 @@
-import { ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { ChevronRight } from "lucide-react";
 
 interface ProjectCardProps {
   name: string;

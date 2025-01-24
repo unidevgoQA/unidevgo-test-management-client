@@ -7,42 +7,38 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useProjectStore } from "@/hooks/useProjectStore";
 import { useState } from "react";
 
-interface CreateProjectModalProps {
+interface UpdateProjectModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  projectId: string;
+  initialData: { name: string; region: string; tag: string };
 }
 
-export function CreateProjectModal({
+export function UpdateProjectModal({
   open,
   onOpenChange,
-}: CreateProjectModalProps) {
-  const addProject = useProjectStore((state) => state.addProject);
-
-  const [formData, setFormData] = useState({
-    name: "",
-    region: "",
-    tag: "",
-  });
+  projectId,
+  initialData,
+}: UpdateProjectModalProps) {
+  const [formData, setFormData] = useState(initialData);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    addProject(formData.name, formData.region, formData.tag);
+    console.log(projectId, formData); // Update project using Zustand store
     onOpenChange(false);
-    setFormData({ name: "", region: "", tag: "" });
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Create New Project</DialogTitle>
+          <DialogTitle>Update Project</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6 p-6">
           <div>
-            <Label>Project Name</Label>{" "}
+            <Label>Project Name</Label>
             <Input
               className="mt-2"
               value={formData.name}
@@ -53,7 +49,7 @@ export function CreateProjectModal({
             />
           </div>
           <div>
-            <Label>Region</Label> {/* Added margin bottom */}
+            <Label>Region</Label>
             <Input
               className="mt-2"
               value={formData.region}
@@ -64,8 +60,7 @@ export function CreateProjectModal({
             />
           </div>
           <div>
-            <Label style={{ marginBottom: "10px" }}>Tag</Label>{" "}
-            {/* Added margin bottom */}
+            <Label>Tag</Label>
             <Input
               className="mt-2"
               value={formData.tag}
@@ -83,7 +78,7 @@ export function CreateProjectModal({
             >
               Cancel
             </Button>
-            <Button type="submit">Create Project</Button>
+            <Button type="submit">Update Project</Button>
           </div>
         </form>
       </DialogContent>
