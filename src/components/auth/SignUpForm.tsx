@@ -1,44 +1,37 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { useAuthStore } from '@/hooks/useAuthStore';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { cn } from '@/lib/utils';
-import { validateEmail } from '@/lib/validators';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { useAuthStore } from "@/hooks/useAuthStore";
+import { cn } from "@/lib/utils";
+import { validateEmail } from "@/lib/validators";
+import { Eye, EyeOff, Zap } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ROLES = [
-  'Head of Engineering',
-  'QA Lead',
-  'QA Engineer',
-  'Software Engineer',
-  'Test Automation Engineer',
-  'Product Manager',
+  "Head of Engineering",
+  "QA Lead",
+  "QA Engineer",
+  "Software Engineer",
+  "Test Automation Engineer",
+  "Product Manager",
 ];
 
 const ORGANIZATIONS = [
-  { name: 'UnidevGO', key: '111111', domain: '@unidevgo.com' },
-  { name: 'RoBenDevs', key: '222222', domain: '@robendevs.com' },
-  { name: 'Other', key: '', domain: '' },
+  { name: "UnidevGO", key: "111111", domain: "@unidevgo.com" },
+  { name: "RoBenDevs", key: "222222", domain: "@robendevs.com" },
+  { name: "Other", key: "", domain: "" },
 ];
 
 export function SignUpForm() {
   const [formData, setFormData] = useState({
-    fullName: '',
-    organization: '',
-    orgKey: '',
-    role: '',
-    email: '',
-    password: '',
+    fullName: "",
+    organization: "",
+    orgKey: "",
+    role: "",
+    email: "",
+    password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -50,34 +43,39 @@ export function SignUpForm() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.fullName) {
-      newErrors.fullName = 'Full name is required';
+      newErrors.fullName = "Full name is required";
     }
 
     if (!formData.organization) {
-      newErrors.organization = 'Please select an organization';
+      newErrors.organization = "Please select an organization";
     }
 
-    const selectedOrg = ORGANIZATIONS.find(org => org.name === formData.organization);
+    const selectedOrg = ORGANIZATIONS.find(
+      (org) => org.name === formData.organization
+    );
     if (selectedOrg && selectedOrg.key) {
       if (!formData.orgKey) {
-        newErrors.orgKey = 'Organization key is required';
+        newErrors.orgKey = "Organization key is required";
       } else if (formData.orgKey !== selectedOrg.key) {
-        newErrors.orgKey = 'Invalid organization key';
+        newErrors.orgKey = "Invalid organization key";
       }
     }
 
     if (!formData.role) {
-      newErrors.role = 'Please select a role';
+      newErrors.role = "Please select a role";
     }
 
     if (!validateEmail(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    } else if (selectedOrg?.domain && !formData.email.endsWith(selectedOrg.domain)) {
+      newErrors.email = "Please enter a valid email address";
+    } else if (
+      selectedOrg?.domain &&
+      !formData.email.endsWith(selectedOrg.domain)
+    ) {
       newErrors.email = `Email must end with ${selectedOrg.domain}`;
     }
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = "Password is required";
     }
 
     setErrors(newErrors);
@@ -88,13 +86,13 @@ export function SignUpForm() {
     e.preventDefault();
     if (validateForm()) {
       const success = await register(formData);
-      
+
       if (success) {
         toast({
           title: "Account created successfully",
           description: "You can now sign in with your credentials",
         });
-        navigate('/signin');
+        navigate("/signin");
       } else {
         toast({
           title: "Registration failed",
@@ -106,10 +104,10 @@ export function SignUpForm() {
   };
 
   const handleOrgChange = (value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       organization: value,
-      orgKey: '',
+      orgKey: "",
     }));
   };
 
@@ -118,7 +116,9 @@ export function SignUpForm() {
       {/* Left Panel */}
       <div className="hidden lg:block lg:w-1/2 bg-primary p-8">
         <div className="h-full flex flex-col items-center justify-center text-white">
-          <h2 className="text-3xl font-bold mb-4">Join Our Testing Community</h2>
+          <h2 className="text-3xl font-bold mb-4">
+            Join Our Testing Community
+          </h2>
           <p className="text-lg text-primary-foreground/80 text-center max-w-md">
             Create your account and start managing your test cases effectively
           </p>
@@ -131,22 +131,33 @@ export function SignUpForm() {
           <div className="flex flex-col items-center text-center">
             <div className="flex items-center gap-2 mb-2">
               <Zap className="h-6 w-6 text-primary fill-primary/20" />
-              <span className="text-xl font-semibold">TestStack</span>
+              <span className="text-xl font-semibold text-black">
+                Test Stack
+              </span>
             </div>
-            <h1 className="text-2xl font-bold tracking-tight">Create an Account</h1>
-            <p className="text-sm text-muted-foreground mt-2">
+            <h1 className="text-2xl font-bold tracking-tight text-black">
+              Create an Account
+            </h1>
+            <p className="text-sm text-muted-foreground mt-2 text-black">
               Fill in your details to get started
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name</Label>
+              <Label htmlFor="fullName" className="text-black">
+                Full Name
+              </Label>
               <Input
                 id="fullName"
                 value={formData.fullName}
-                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                className={cn(errors.fullName && "border-red-500")}
+                onChange={(e) =>
+                  setFormData({ ...formData, fullName: e.target.value })
+                }
+                className={cn(
+                  "text-black",
+                  errors.fullName && "border-red-500"
+                )}
                 placeholder="Enter your full name"
               />
               {errors.fullName && (
@@ -155,36 +166,50 @@ export function SignUpForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="organization">Organization</Label>
-              <Select
-                value={formData.organization}
-                onValueChange={handleOrgChange}
-              >
-                <SelectTrigger className={cn(errors.organization && "border-red-500")}>
-                  <SelectValue placeholder="Select organization" />
-                </SelectTrigger>
-                <SelectContent>
+              <Label htmlFor="organization" className="text-black">
+                Organization
+              </Label>
+              <div className="relative">
+                <select
+                  id="organization"
+                  value={formData.organization}
+                  onChange={(e) => handleOrgChange(e.target.value)}
+                  className={cn(
+                    "w-full px-4 py-1 border rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-primary",
+                    errors.organization && "border-red-500"
+                  )}
+                >
+                  <option value="" disabled>
+                    Select organization
+                  </option>
                   {ORGANIZATIONS.map((org) => (
-                    <SelectItem key={org.name} value={org.name}>
+                    <option key={org.name} value={org.name}>
                       {org.name}
-                    </SelectItem>
+                    </option>
                   ))}
-                </SelectContent>
-              </Select>
+                </select>
+              </div>
               {errors.organization && (
                 <p className="text-xs text-red-500">{errors.organization}</p>
               )}
             </div>
 
-            {formData.organization && formData.organization !== 'Other' && (
+            {formData.organization && formData.organization !== "Other" && (
               <div className="space-y-2">
-                <Label htmlFor="orgKey">Organization Key</Label>
+                <Label htmlFor="orgKey" className="text-black">
+                  Organization Key
+                </Label>
                 <Input
                   id="orgKey"
                   type="password"
                   value={formData.orgKey}
-                  onChange={(e) => setFormData({ ...formData, orgKey: e.target.value })}
-                  className={cn(errors.orgKey && "border-red-500")}
+                  onChange={(e) =>
+                    setFormData({ ...formData, orgKey: e.target.value })
+                  }
+                  className={cn(
+                    "text-black",
+                    errors.orgKey && "border-red-500"
+                  )}
                   placeholder="Enter organization key"
                 />
                 {errors.orgKey && (
@@ -194,35 +219,48 @@ export function SignUpForm() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
-              <Select
-                value={formData.role}
-                onValueChange={(value) => setFormData({ ...formData, role: value })}
-              >
-                <SelectTrigger className={cn(errors.role && "border-red-500")}>
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent>
+              <Label htmlFor="role" className="text-black">
+                Role
+              </Label>
+              <div className="relative">
+                <select
+                  id="role"
+                  value={formData.role}
+                  onChange={(e) =>
+                    setFormData({ ...formData, role: e.target.value })
+                  }
+                  className={cn(
+                    "w-full px-4 py-1 border rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-primary",
+                    errors.role && "border-red-500"
+                  )}
+                >
+                  <option value="" disabled>
+                    Select role
+                  </option>
                   {ROLES.map((role) => (
-                    <SelectItem key={role} value={role}>
+                    <option key={role} value={role}>
                       {role}
-                    </SelectItem>
+                    </option>
                   ))}
-                </SelectContent>
-              </Select>
+                </select>
+              </div>
               {errors.role && (
                 <p className="text-xs text-red-500">{errors.role}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-black">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className={cn(errors.email && "border-red-500")}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                className={cn("text-black", errors.email && "border-red-500")}
                 placeholder="Enter your email"
                 maxLength={50}
               />
@@ -232,14 +270,21 @@ export function SignUpForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-black">
+                Password
+              </Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className={cn(errors.password && "border-red-500")}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  className={cn(
+                    "text-black",
+                    errors.password && "border-red-500"
+                  )}
                   placeholder="Create a password"
                 />
                 <Button
@@ -266,12 +311,12 @@ export function SignUpForm() {
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
-              Already have an account?{' '}
+              Already have an account?{" "}
               <Button
                 type="button"
                 variant="link"
                 className="p-0"
-                onClick={() => navigate('/signin')}
+                onClick={() => navigate("/signin")}
               >
                 Sign in
               </Button>
