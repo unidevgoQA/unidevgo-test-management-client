@@ -1,12 +1,16 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Folder } from 'lucide-react';
-import { useFolderStore } from '@/hooks/useFolderStore';
-import { EmojiPicker } from './EmojiPicker';
-import type { FolderType } from '@/types/folder';
+import { useFolderStore } from "@/hooks/useFolderStore";
+import type { FolderType } from "@/types/folder";
+import { useState } from "react";
+import { EmojiPicker } from "./EmojiPicker";
 
 interface FolderDialogProps {
   open: boolean;
@@ -14,14 +18,18 @@ interface FolderDialogProps {
   folder?: FolderType;
 }
 
-export function FolderDialog({ open, onOpenChange, folder }: FolderDialogProps) {
-  const [name, setName] = useState(folder?.name || '');
-  const [emoji, setEmoji] = useState(folder?.emoji || '📁');
+export function FolderDialog({
+  open,
+  onOpenChange,
+  folder,
+}: FolderDialogProps) {
+  const [name, setName] = useState(folder?.name || "");
+  const [emoji, setEmoji] = useState(folder?.emoji || "📁");
   const { addFolder, updateFolder } = useFolderStore();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (folder) {
       updateFolder(folder.id, { name, emoji });
     } else {
@@ -33,10 +41,10 @@ export function FolderDialog({ open, onOpenChange, folder }: FolderDialogProps) 
         children: [],
       });
     }
-    
+
     onOpenChange(false);
-    setName('');
-    setEmoji('📁');
+    setName("");
+    setEmoji("📁");
   };
 
   return (
@@ -44,12 +52,14 @@ export function FolderDialog({ open, onOpenChange, folder }: FolderDialogProps) 
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-sm">
-            {folder ? 'Edit folder' : 'Create new folder'}
+            {folder ? "Edit folder" : "Create new folder"}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-xs">Folder name</Label>
+            <Label htmlFor="name" className="text-xs">
+              Folder name
+            </Label>
             <div className="relative flex gap-2">
               <EmojiPicker value={emoji} onChange={setEmoji} />
               <Input
@@ -78,7 +88,7 @@ export function FolderDialog({ open, onOpenChange, folder }: FolderDialogProps) 
               className="text-xs h-8"
               disabled={!name.trim()}
             >
-              {folder ? 'Save changes' : 'Create folder'}
+              {folder ? "Save changes" : "Create folder"}
             </Button>
           </div>
         </form>

@@ -1,15 +1,11 @@
+import { FolderType } from "@/types/folder";
 import { Project } from "@/types/project";
 import { create } from "zustand";
 
 interface ProjectStore {
-  projects: Project[];
+  projects: (Project & { folders: FolderType[] })[]; // Add folders as part of the project
   addProject: (name: string, region: string, tag: string) => void;
-  addModule: (projectId: string, moduleName: string) => void;
-  addSubModule: (
-    projectId: string,
-    moduleId: string,
-    subModuleName: string
-  ) => void;
+  addFolderToProject: (projectId: string, folder: FolderType) => void;
 }
 
 export const useProjectStore = create<ProjectStore>((set) => ({
@@ -18,42 +14,23 @@ export const useProjectStore = create<ProjectStore>((set) => ({
     set((state) => ({
       projects: [
         ...state.projects,
-        { id: Date.now().toString(), name, region, tag, modules: [] },
+        {
+          id: Date.now().toString(),
+          name,
+          region,
+          tag,
+          modules: [],
+          folders: [],
+        },
       ],
     })),
-  addModule: (projectId, moduleName) =>
+  addFolderToProject: (projectId, folder) =>
     set((state) => ({
-      projects: state.projects.map((project) =>
-        project.id === projectId
-          ? {
-              ...project,
-              modules: [
-                ...project.modules,
-                { id: Date.now().toString(), name: moduleName, subModules: [] },
-              ],
-            }
-          : project
-      ),
-    })),
-  addSubModule: (projectId, moduleId, subModuleName) =>
-    set((state) => ({
-      projects: state.projects.map((project) =>
-        project.id === projectId
-          ? {
-              ...project,
-              modules: project.modules.map((module) =>
-                module.id === moduleId
-                  ? {
-                      ...module,
-                      subModules: [
-                        ...module.subModules,
-                        { id: Date.now().toString(), name: subModuleName },
-                      ],
-                    }
-                  : module
-              ),
-            }
-          : project
-      ),
+      projects: state.projects.map((project) => {
+        if (project.id === projectId) {
+          return { ...project, folders: [...project.folders, folder] };
+        }
+        return project;
+      }),
     })),
 }));

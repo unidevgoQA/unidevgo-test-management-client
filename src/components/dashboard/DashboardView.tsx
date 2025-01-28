@@ -15,7 +15,7 @@ export function DashboardView({ onProjectSelect }: DashboardViewProps) {
 
   // Get projects from the store
   const { projects } = useProjectStore();
-
+  console.log("Projects", projects);
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };

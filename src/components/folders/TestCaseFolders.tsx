@@ -1,19 +1,26 @@
-import { useState } from 'react';
-import { FolderHeader } from './FolderHeader';
-import { FolderTree } from './FolderTree';
-import { FolderDialog } from './FolderDialog';
-import { FolderStats } from './FolderStats';
-import { EmptyFolderStats } from './EmptyFolderStats';
-import { useFolderStore } from '@/hooks/useFolderStore';
-import { FolderType } from '@/types/folder';
+import { useFolderStore } from "@/hooks/useFolderStore";
+import { FolderType } from "@/types/folder";
+import { useState } from "react";
+import { EmptyFolderStats } from "./EmptyFolderStats";
+import { FolderDialog } from "./FolderDialog";
+import { FolderHeader } from "./FolderHeader";
+import { FolderStats } from "./FolderStats";
+import { FolderTree } from "./FolderTree";
 
 export function TestCaseFolders() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState<FolderType | null>(null);
-  const { folders, selectedFolderId, setSelectedFolder: selectFolder, deleteFolder } = useFolderStore();
+  const {
+    folders,
+    selectedFolderId,
+    setSelectedFolder: selectFolder,
+    deleteFolder,
+  } = useFolderStore();
 
-  const filteredFolders = folders.filter(folder => 
+  console.log("FOLDERS", folders);
+
+  const filteredFolders = folders.filter((folder) =>
     folder.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -28,7 +35,7 @@ export function TestCaseFolders() {
 
   // Get folder path for breadcrumb
   const getFolderPath = (folderId: string): string[] => {
-    const path = ['Project'];
+    const path = ["Project"];
     const findFolder = (folders: FolderType[], id: string): boolean => {
       for (const folder of folders) {
         if (folder.id === id) {
@@ -65,7 +72,7 @@ export function TestCaseFolders() {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
       />
-      
+
       <div className="flex-1 overflow-hidden">
         <FolderTree
           folders={filteredFolders}
@@ -81,7 +88,7 @@ export function TestCaseFolders() {
           <FolderStats
             path={getFolderPath(selectedFolderId)}
             {...selectedFolderStats}
-            onExecute={() => console.log('Execute tests')}
+            onExecute={() => console.log("Execute tests")}
           />
         ) : (
           <EmptyFolderStats />

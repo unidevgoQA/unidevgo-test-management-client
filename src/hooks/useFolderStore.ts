@@ -1,11 +1,12 @@
-import { create } from 'zustand';
-import { FolderType } from '@/types/folder';
+import { FolderType } from "@/types/folder";
+import { create } from "zustand";
+import { useProjectStore } from "./useProjectStore"; // Import the project store
 
 interface FolderState {
   folders: FolderType[];
   selectedFolderId: string | null;
   setSelectedFolder: (id: string | null) => void;
-  addFolder: (folder: FolderType) => void;
+  addFolder: (folder: FolderType, projectId: string, parentId?: string) => void; // Add parentId as an optional argument
   updateFolder: (id: string, updates: Partial<FolderType>) => void;
   deleteFolder: (id: string) => void;
 }
@@ -13,78 +14,71 @@ interface FolderState {
 let folderCounter = 1;
 
 export const useFolderStore = create<FolderState>((set) => ({
-  folders: [
-    {
-      id: '1',
-      name: 'Integration Tests',
-      color: 'yellow',
-      number: folderCounter++,
-      testCaseCount: 3,
-      children: [
-        {
-          id: '2',
-          name: 'API Tests',
-          color: 'yellow',
-          parentId: '1',
-          testCaseCount: 2,
-        },
-      ],
-    },
-    {
-      id: '3',
-      name: 'E2E Tests',
-      color: 'blue',
-      number: folderCounter++,
-      testCaseCount: 2,
-      children: [],
-    },
-  ],
+  folders: [],
   selectedFolderId: null,
   setSelectedFolder: (id) => set({ selectedFolderId: id }),
-  addFolder: (newFolder) => 
-    set((state) => {
-      if (!state.selectedFolderId) {
-        return { 
-          folders: [...state.folders, { ...newFolder, number: folderCounter++ }] 
-        };
-      }
 
-      const addFolderToTree = (folders: FolderType[]): FolderType[] => {
-        return folders.map(folder => {
-          if (folder.id === state.selectedFolderId) {
-            return {
-              ...folder,
-              children: [...(folder.children || []), { 
-                ...newFolder, 
-                parentId: folder.id,
-                color: folder.color 
-              }],
-            };
-          }
-          if (folder.children) {
-            return {
-              ...folder,
-              children: addFolderToTree(folder.children),
-            };
-          }
-          return folder;
-        });
-      };
+  // Reusing the same handler name `addFolder`
+  addFolder: (newFolder, projectId, parentId) => {
+    const { addFolderToProject } = useProjectStore.getState(); // Access the project store's function
+    if (parentId) {
+      // If there's a parentId, add the folder under that folder
+      set((state) => ({
+        folders: addFolderToTree(state.folders, newFolder, parentId),
+      }));
+    } else {
+      // If no parentId, just add the folder at the root level
+      addFolderToProject(projectId, { ...newFolder, number: folderCounter++ });
+      set((state) => ({
+        folders: [...state.folders, { ...newFolder, number: folderCounter++ }],
+      }));
+    }
+  },
 
-      return { folders: addFolderToTree(state.folders) };
-    }),
   updateFolder: (id, updates) =>
     set((state) => ({
       folders: updateFolderInTree(state.folders, id, updates),
     })),
+
   deleteFolder: (id) =>
     set((state) => ({
       folders: deleteFolderFromTree(state.folders, id),
-      selectedFolderId: state.selectedFolderId === id ? null : state.selectedFolderId,
+      selectedFolderId:
+        state.selectedFolderId === id ? null : state.selectedFolderId,
     })),
 }));
 
-function updateFolderInTree(folders: FolderType[], id: string, updates: Partial<FolderType>): FolderType[] {
+// Helper function to add folder to a parent folder (or root)
+function addFolderToTree(
+  folders: FolderType[],
+  newFolder: FolderType,
+  parentId: string
+): FolderType[] {
+  return folders.map((folder) => {
+    if (folder.id === parentId) {
+      return {
+        ...folder,
+        children: [
+          ...(folder.children || []),
+          { ...newFolder, parentId: folder.id },
+        ],
+      };
+    }
+    if (folder.children) {
+      return {
+        ...folder,
+        children: addFolderToTree(folder.children, newFolder, parentId),
+      };
+    }
+    return folder;
+  });
+}
+
+function updateFolderInTree(
+  folders: FolderType[],
+  id: string,
+  updates: Partial<FolderType>
+): FolderType[] {
   return folders.map((folder) => {
     if (folder.id === id) {
       return { ...folder, ...updates };
